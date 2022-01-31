@@ -37,11 +37,11 @@ int main() {
 
 	size_t word_count = 0;
 
-	char left = 2;
 	while (fgets(line, sizeof(line), file)) {
 		str_to_lower(line);
 
 		bool allowed = true;
+		char left = 2;
 
 		if (left == 2) {
 			check_hand(letters_l, letters_r, *line, &left, &allowed);
