@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-char* str_to_lower(char* in) {
+static char* str_to_lower(char* in) {
 	for (char* c = in; *c; c++) {
 		*c = tolower((unsigned char)*c);
 	}
@@ -13,20 +13,15 @@ char* str_to_lower(char* in) {
 	return in;
 }
 
-/* Macro!!!
- *
- * Because I was too lazy to make a function
- * that takes left and allowed as references... */
-#define left_or_right(c_) \
-	do { \
-		if (strchr(letters_l, (c_))) { \
-			left = true; \
-		} else if (strchr(letters_r, (c_))) { \
-			left = false; \
-		} else { \
-			allowed = false; \
-		} \
-	} while (0)
+static void check_hand(const char* letters_l, const char* letters_r, char c, char* left, bool* allowed) {
+	if (strchr(letters_l, c)) { 
+		*left = true; 
+	} else if (strchr(letters_r, c)) { 
+		*left = false; 
+	} else { 
+		*allowed = false; 
+	}
+}
 
 int main() {
 	FILE* file = fopen("words.txt", "r");
@@ -49,7 +44,7 @@ int main() {
 		bool allowed = true;
 
 		if (left == 2) {
-			left_or_right(*line);
+			check_hand(letters_l, letters_r, *line, &left, &allowed);
 		}
 
 		size_t len = strlen(line);
@@ -58,9 +53,9 @@ int main() {
 			line[len - 1] = '\0';
 		}
 
-		for (const char* c = line + 1; *c; c++) {
+		for (const char* c = line + 1; *c; c++) { /* First character has already been checked. */
 			int old_left = left;
-			left_or_right(*c);
+			check_hand(letters_l, letters_r, *c, &left, &allowed);
 			if (old_left == left) {
 				allowed = false;
 			}
